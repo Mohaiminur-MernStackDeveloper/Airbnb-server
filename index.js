@@ -36,7 +36,7 @@ async function run() {
         const result = await restaurant.find().toArray();
         res.send(result);
       } catch (error) {
-        console.log("all data route is not working properly!");
+        console.log(error);
       }
     });
 
