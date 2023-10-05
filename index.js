@@ -40,6 +40,51 @@ async function run() {
       }
     });
 
+    app.get("/iconiccities", async(req,res)=>{
+      try {
+        const result = await restaurant.find({category:"iconiccities"}).toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error)
+      }
+    })
+
+    app.get("/countryside", async(req,res)=>{
+      try {
+        const result = await restaurant.find({category:"countryside"}).toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error)
+      }
+    })
+
+    app.get("/topoftheworld", async(req,res)=>{
+      try {
+        const result = await restaurant.find({category:"topoftheworld"}).toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error)
+      }
+    })
+
+    app.get("/beach", async(req,res)=>{
+      try {
+        const result = await restaurant.find({category:"beach"}).toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error)
+      }
+    })
+    
+    app.get("/luxe", async(req,res)=>{
+      try {
+        const result = await restaurant.find({category:"Luxe"}).toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error)
+      }
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
