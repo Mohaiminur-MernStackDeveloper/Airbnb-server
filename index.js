@@ -106,10 +106,10 @@ async function run() {
           reqData.sharedroom ? { sharedroom: reqData.sharedroom } : null,
           reqData.bedroom ? { bedroom: reqData.bedroom } : null,
           reqData.bed ? { bed: reqData.bed } : null,
-          reqData.bathrooms ? { bathrooms: reqData.bathrooms } : null,
+          reqData.bathrooms ? { bathroom: reqData.bathrooms } : null,
           reqData.propertyHouse ? { propertyHouse: reqData.propertyHouse } : null,
           reqData.propertyApertment ? { propertyapartment: reqData.propertyApertment } : null,
-          reqData.propertyguesthouse ? { propertyguesthouse: reqData.propertyguesthouse } : null,
+          reqData.propertyGuestHouse ? { propertyguesthouse: reqData.propertyGuestHouse } : null,
           reqData.propertyHotel ? { propertyHotel: reqData.propertyHotel } : null,
         ].filter((filter) => filter !== null);
     
