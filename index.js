@@ -7,6 +7,7 @@ const port = 5000;
 
 // midlewere is here
 app.use(cors());
+app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.Mongodb_username}:${process.env.Mongodb_password}@cluster0.85env82.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -40,50 +41,105 @@ async function run() {
       }
     });
 
-    app.get("/iconiccities", async(req,res)=>{
+    app.get("/iconiccities", async (req, res) => {
       try {
-        const result = await restaurant.find({category:"iconiccities"}).toArray();
+        const result = await restaurant
+          .find({ category: "iconiccities" })
+          .toArray();
         res.send(result);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    })
+    });
 
-    app.get("/countryside", async(req,res)=>{
+    app.get("/countryside", async (req, res) => {
       try {
-        const result = await restaurant.find({category:"countryside"}).toArray();
+        const result = await restaurant
+          .find({ category: "countryside" })
+          .toArray();
         res.send(result);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    })
+    });
 
-    app.get("/topoftheworld", async(req,res)=>{
+    app.get("/topoftheworld", async (req, res) => {
       try {
-        const result = await restaurant.find({category:"topoftheworld"}).toArray();
+        const result = await restaurant
+          .find({ category: "topoftheworld" })
+          .toArray();
         res.send(result);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    })
+    });
 
-    app.get("/beach", async(req,res)=>{
+    app.get("/beach", async (req, res) => {
       try {
-        const result = await restaurant.find({category:"beach"}).toArray();
+        const result = await restaurant.find({ category: "beach" }).toArray();
         res.send(result);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    })
+    });
+
+    app.get("/luxe", async (req, res) => {
+      try {
+        const result = await restaurant.find({ category: "Luxe" }).toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+
+    // filter modal data route is here
+    app.post("/filterModalData", async (req, res) => {
+      try {
+        const reqData = req.body;
     
-    app.get("/luxe", async(req,res)=>{
-      try {
-        const result = await restaurant.find({category:"Luxe"}).toArray();
+        // Create an array of filter objects for optional filters
+        const optionalFilters = [
+          { pricePerNight: { $gte: reqData.minValue, $lte: reqData.maxValue }},
+          reqData.entirerplace ? { entireplace: reqData.entirerplace } : null,
+          reqData.room ? { room: reqData.room } : null,
+          reqData.sharedroom ? { sharedroom: reqData.sharedroom } : null,
+          reqData.bedroom ? { bedroom: reqData.bedroom } : null,
+          reqData.bed ? { bed: reqData.bed } : null,
+          reqData.bathrooms ? { bathrooms: reqData.bathrooms } : null,
+          reqData.propertyHouse ? { propertyHouse: reqData.propertyHouse } : null,
+          reqData.propertyApertment ? { propertyapartment: reqData.propertyApertment } : null,
+          reqData.propertyguesthouse ? { propertyguesthouse: reqData.propertyguesthouse } : null,
+          reqData.propertyHotel ? { propertyHotel: reqData.propertyHotel } : null,
+        ].filter((filter) => filter !== null);
+    
+        // Create the aggregation pipeline
+        const pipeline = [
+          {
+            $match: {
+              pricePerNight: {
+                $gte: reqData.minValue,
+                $lte: reqData.maxValue,
+              },
+            },
+          },
+          // Add the optional filters to the pipeline using $and
+          {
+            $match: {
+              $and: optionalFilters,
+            },
+          },
+        ];
+    
+        // Execute the aggregation pipeline
+        const result = await restaurant.aggregate(pipeline).toArray();
         res.send(result);
       } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).json({ error: 'Server Error' });
       }
-    })
+    });
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
