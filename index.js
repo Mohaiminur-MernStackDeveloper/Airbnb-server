@@ -92,27 +92,34 @@ async function run() {
       }
     });
 
-
     // filter modal data route is here
     app.post("/filterModalData", async (req, res) => {
       try {
         const reqData = req.body;
-    
+
         // Create an array of filter objects for optional filters
         const optionalFilters = [
-          { pricePerNight: { $gte: reqData.minValue, $lte: reqData.maxValue }},
+          { pricePerNight: { $gte: reqData.minValue, $lte: reqData.maxValue } },
           reqData.entirerplace ? { entireplace: reqData.entirerplace } : null,
           reqData.room ? { room: reqData.room } : null,
           reqData.sharedroom ? { sharedroom: reqData.sharedroom } : null,
           reqData.bedroom ? { bedroom: reqData.bedroom } : null,
           reqData.bed ? { bed: reqData.bed } : null,
           reqData.bathrooms ? { bathroom: reqData.bathrooms } : null,
-          reqData.propertyHouse ? { propertyHouse: reqData.propertyHouse } : null,
-          reqData.propertyApertment ? { propertyapartment: reqData.propertyApertment } : null,
-          reqData.propertyGuestHouse ? { propertyguesthouse: reqData.propertyGuestHouse } : null,
-          reqData.propertyHotel ? { propertyHotel: reqData.propertyHotel } : null,
+          reqData.propertyHouse
+            ? { propertyHouse: reqData.propertyHouse }
+            : null,
+          reqData.propertyApertment
+            ? { propertyapartment: reqData.propertyApertment }
+            : null,
+          reqData.propertyGuestHouse
+            ? { propertyguesthouse: reqData.propertyGuestHouse }
+            : null,
+          reqData.propertyHotel
+            ? { propertyHotel: reqData.propertyHotel }
+            : null,
         ].filter((filter) => filter !== null);
-    
+
         // Create the aggregation pipeline
         const pipeline = [
           {
@@ -130,16 +137,53 @@ async function run() {
             },
           },
         ];
-    
+
         // Execute the aggregation pipeline
         const result = await restaurant.aggregate(pipeline).toArray();
         res.send(result);
       } catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Server Error' });
+        res.status(500).json({ error: "Server Error" });
       }
     });
-    
+
+    //filter subnavbarData
+    app.post("/filtersubnavbardata", async (req, res) => {
+      try {
+        const reqData = req.body;
+        const optionalFilters = [
+          reqData.country !== "Search destinations"
+            ? { country: reqData.country }
+            : null,
+          reqData.startDate !== reqData.endDate
+            ? { bookingStartDate: { $gte: reqData.startDate } }
+            : null,
+          reqData.startDate !== reqData.endDate
+            ? { bookingEndDate: { $lte: reqData.endDate } }
+            : null,
+          reqData.adults > 0 ? { adult: { $gte: reqData.adults } } : null,
+          reqData.children > 0
+            ? { children: { $gte: reqData.children } }
+            : null,
+          reqData.infants > 0 ? { infants: { $gte: reqData.infants } } : null,
+          reqData.pets > 0 ? { pets: { $gte: reqData.pets } } : null,
+        ].filter((filter) => filter !== null);
+
+        const pipeline = [
+          // Add the optional filters to the pipeline using $and
+          {
+            $match: {
+              $and: optionalFilters,
+            },
+          },
+        ];
+
+        const result = await restaurant.aggregate(pipeline).toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
